@@ -1,0 +1,117 @@
+<odoo>
+    <data>
+        <!-- List View -->
+        <record model="ir.ui.view" id="oca_flows_list">
+            <field name="name">oca.flows</field>
+            <field name="model">oca.flows</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="name"/>
+                    <field name="description"/>
+                    <field name="start_date"/>
+                    <field name="duration"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="oca_flows_view_form" model="ir.ui.view">
+            <field name="name">oca.flows.form</field>
+            <field name="model">oca.flows</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="start_date"/>
+                            </group>
+                            <group>
+                                <field name="end_date"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="description"/>
+                        </group>
+                        <notebook>
+                            <page string="Checklist">
+                                <field name="activity_checklist"/>
+                            </page>
+                            <page string="Settings">
+                                <field name="requires_prereq"/>
+                                <field name="is_active" invisible="1"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="oca_flow_search_view" model="ir.ui.view">
+            <field name="name">oca.flows.search</field>
+            <field name="model">oca.flows</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Pivot View-->
+        <record id="oca_flow_pivot_view" model="ir.ui.view">
+            <field name="name">oca.flows.pivot</field>
+            <field name="model">oca.flows</field>
+            <field name="arch" type="xml">
+                <pivot sample="1">
+                    <field name="create_date" type="row"/>
+                    <field name="duration" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Kanban -->
+        <record id="oca_flows_kanban_view" model="ir.ui.view">
+            <field name="name">oca.flows.kanban</field>
+            <field name="model">oca.flows</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile">
+                    <field name="name"/>
+                    <field name="description" readonly="1" force_save="0"/>
+                    <templates>
+                        <t t-name="card">
+                            <field name="name" class="fw-bold fs-5"/>
+                            <span>
+                                Duration
+                                <field name="duration"/>
+                            </span>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+
+        <!-- Action -->
+        <record model="ir.actions.act_window" id="oca_flows_action_window">
+            <field name="name">Flow Management</field>
+            <field name="res_model">oca.flows</field>
+            <field name="view_mode">list,form,kanban,pivot,graph</field>
+        </record>
+
+        <!-- Top menu item -->
+        <menuitem name="OCA Flows" id="oca_flows.menu_root"/>
+
+        <!-- menu categories -->
+        <menuitem name="Process" id="oca_flows.menu_1" parent="oca_flows.menu_root"/>
+
+        <!-- actions -->
+        <menuitem name="Initialized" id="oca_flows.menu_1_list" parent="oca_flows.menu_1"
+                  action="oca_flows_action_window"/>
+
+    </data>
+</odoo>
