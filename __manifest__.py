@@ -2,10 +2,9 @@
 {
     'name': "OCA Flows Management",
 
-    'summary': "Custom Flows for OCA Flow",
-    'description': """OCA Training from Tech Things """,
+    'summary': "Custom Flows for OCA Flow - Coffee Processing",
     'author': "KenjxJJ",
-    'category': 'Accounting',
+    'category': 'Manufacturing',
     'version': '0.1',
     # any module necessary for this one to work correctly
     'depends': ['base'],
@@ -20,5 +19,7 @@
     'demo': [
         'demo/demo.xml',
     ],
+    'images': ['static/description/icon.png'],
+
 }
 

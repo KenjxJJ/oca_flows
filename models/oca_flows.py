@@ -14,8 +14,7 @@ class OCAFlows(models.Model):
 
     is_active = fields.Boolean(string='Active', default=True)
     activity_checklist = fields.Html(string='Activity Checklist')
-    requires_prereq =  fields.Boolean(string='Requires Prerequisites')
-
+    requires_prereq = fields.Boolean(string='Requires Prerequisites')
 
     @api.constrains('start_date', 'end_date')
     def _check_start_date(self):

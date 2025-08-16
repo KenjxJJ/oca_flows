@@ -104,10 +104,10 @@
         </record>
 
         <!-- Top menu item -->
-        <menuitem name="OCA Flows" id="oca_flows.menu_root"/>
+        <menuitem name="OCA Flows" id="oca_flows.menu_root" web_icon="oca_flows,static/description/icon.png"/>
 
         <!-- menu categories -->
-        <menuitem name="Process" id="oca_flows.menu_1" parent="oca_flows.menu_root"/>
+        <menuitem name="Processes" id="oca_flows.menu_1" parent="oca_flows.menu_root"/>
 
         <!-- actions -->
         <menuitem name="Initialized" id="oca_flows.menu_1_list" parent="oca_flows.menu_1"
