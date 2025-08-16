@@ -62,6 +62,7 @@ class OCAFlows(models.Model):
 class OCAProcess(models.Model):
     _name = 'oca.process.requests'
     _description = 'OCA Process Requests'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(string='Process No.')
     description = fields.Text(string='Description')
