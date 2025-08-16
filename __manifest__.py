@@ -14,6 +14,7 @@
         'security/ir.model.access.csv',
         'views/oca_flow_views.xml',
         # 'views/templates.xml',
+        'views/oca_process_requests.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

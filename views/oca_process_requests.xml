@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Form View -->
+        <record id="view_oca_process_form" model="ir.ui.view">
+            <field name="name">oca.process.form</field>
+            <field name="model">oca.process.requests</field>
+            <field name="arch" type="xml">
+                <form string="Requests">
+                    <header>
+                        <button name="action_submit" string="Submit to Manager" type="object" class="oe_highlight"
+                                invisible="state != 'draft'"/>
+                        <button name="action_approve" string="Approve" type="object" class="oe_highlight"
+                                invisible="state != 'submitted'"/>
+                        <button name="action_reject" string="Reject" type="object" class="oe_highlight"
+                                invisible="state != 'submitted'"/>
+                        <button name="action_cancel" string="Cancel" type="object" class="oe_highlight"
+                                invisible="state != 'cancelled'"/>
+                        <button name="action_in_progress" string="In Progress" type="object" class="oe_highlight"
+                                invisible="state != 'approved'"/>
+                        <button name="action_completed" string="Complete" type="object" class="oe_highlight"
+                                invisible="state != 'in_progress'"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,submitted,approved,in_progress,completed"
+                               statusbar_colors='{"rejected": "red", "cancelled": "red"}'/>
+                    </header>
+                    <sheet>
+
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Process Number"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="flow_id"/>
+                                <field name="customer_id" options="{'no_open': True}"/>
+                                <field name="start_date"/>
+                                <field name="end_date"/>
+                            </group>
+                            <group>
+                                <field name="create_date" string="Created on" readonly="1"/>
+                                <field name="write_date" string="Last Updated on" readonly="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Description">
+                                <field name="description" nolabel="1" placeholder="Enter process description..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_oca_process_list" model="ir.ui.view">
+            <field name="name">oca.process.list</field>
+            <field name="model">oca.process.requests</field>
+            <field name="arch" type="xml">
+                <list string="OCA Processes" decoration-muted="state in ('rejected', 'cancelled')"
+                      decoration-success="state == 'completed'">
+                    <field name="name"/>
+                    <field name="flow_id"/>
+                    <field name="customer_id"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="state" widget="badge"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_oca_process_search" model="ir.ui.view">
+            <field name="name">oca.process.search</field>
+            <field name="model">oca.process.requests</field>
+            <field name="arch" type="xml">
+                <search string="OCA Process">
+                    <field name="name" string="Process Number"/>
+                    <field name="flow_id"/>
+                    <field name="customer_id"/>
+                    <separator/>
+                    <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
+                    <filter string="Submitted" name="submitted" domain="[('state','=','submitted')]"/>
+                    <filter string="In Progress" name="in_progress" domain="[('state','=','in_progress')]"/>
+                    <filter string="Completed" name="completed" domain="[('state','=','completed')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Status" name="group_by_state" context="{'group_by':'state'}"/>
+                        <filter string="Flow" name="group_by_flow" context="{'group_by':'flow_id'}"/>
+                        <filter string="Customer" name="group_by_customer" context="{'group_by':'customer_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_oca_process_requests" model="ir.actions.act_window">
+            <field name="name">OCA Processes</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">oca.process.requests</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_oca_process_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first OCA Process
+                </p>
+            </field>
+        </record>
+
+        <!-- Menu Items -->
+        <menuitem id="menu_oca_process_request" parent="oca_flows.menu_root"
+                  name="Requests" action="action_oca_process_requests" sequence="20"/>
+
+    </data>
+</odoo>
