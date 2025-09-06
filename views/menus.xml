@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Top menu item -->
+        <menuitem name="OCA Flows" id="oca_flows.menu_root" web_icon="oca_flows,static/description/icon.png"/>
+
+
+        <menuitem id="menu_oca_process_request_menu" parent="oca_flows.menu_root"
+                  name="Requests" sequence="10"/>
+        <menuitem id="menu_oca_process_request" parent="menu_oca_process_request_menu"
+                  name="Submissions" action="action_oca_process_requests" sequence="10"/>
+        <menuitem id="oca_flows.oca_employees_menu" name="Employees"
+                  parent="menu_oca_process_request_menu" action="oca_employees_view_action" sequence="10"/>
+
+        <menuitem name="Flow Management" id="oca_flows_menu" parent="oca_flows.menu_root"
+                  sequence="20"/>
+        <menuitem name="Processes" id="oca_flow_process" parent="oca_flows_menu"
+                  action="oca_flows_action_window"/>
+        <menuitem name="Customers" id="oca_flow_customers" parent="oca_flows_menu"
+                  sequence="20"
+                  action="oca_flows_customers_action"/>
+
+
+    </data>
+</odoo>

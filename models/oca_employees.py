@@ -28,7 +28,6 @@ class OCAQualifications(models.Model):
     _name = 'oca.employee.qualifications'
     _description = 'Employee Qualifications'
 
-
     employee_ids = fields.Many2many(
         'hr.employee',
         'oca_employees_qualifications_rel',

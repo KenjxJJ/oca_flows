@@ -7,14 +7,17 @@
     'category': 'Manufacturing',
     'version': '0.1',
     # any module necessary for this one to work correctly
-    'depends': ['base', 'mail', 'hr'],
+    'depends': ['base', 'mail', 'hr', 'stock', 'sale', 'account','accountant','mrp'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'data/sequences.xml',
         'views/oca_flow_views.xml',
         # 'views/templates.xml',
         'views/oca_process_requests.xml',
+        'views/oca_employees.xml',
+        'views/menus.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

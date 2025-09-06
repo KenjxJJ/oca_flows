@@ -31,24 +31,25 @@
                             <h1>
                                 <field name="name"/>
                             </h1>
-                            <div class="o_row">
-                                <field name="description"
-                                       placeholder="Enter a detailed description of this flow process..."/>
-                            </div>
+
                         </div>
                         <group>
                             <group>
                                 <field name="start_date"/>
+                                <field name="list_price" string="Sales Price" widget="monetary"
+                                       currency_field="currency_id"
+                                />
                             </group>
                             <group>
                                 <field name="end_date"/>
                                 <field name="customer_ids" widget="many2many_tags"/>
                             </group>
                         </group>
-                        <group>
-                            <field name="description"/>
-                        </group>
                         <notebook>
+                            <page string="Description">
+                                <field name="description"
+                                       placeholder="Enter a detailed description of this flow process..."/>
+                            </page>
                             <page string="Checklist">
                                 <field name="activity_checklist"/>
                             </page>
@@ -108,6 +109,21 @@
             </field>
         </record>
 
+        <record id="oca_flows_customers_action" model="ir.actions.act_window">
+            <field name="name">OCA Customers</field>
+            <field name="res_model">res.partner</field>
+            <field name="domain">[('is_oca_customer','=', True)]</field>
+            <field name="context">
+                {
+                'search_default_customer': 1,
+                'default_is_oca_customer': 1,
+                'res_partner_search_mode': 'customer',
+                'default_is_company': True,
+                'default_customer_rank': 1
+                }
+            </field>
+            <field name="view_mode">list,form</field>
+        </record>
 
         <!-- Action -->
         <record model="ir.actions.act_window" id="oca_flows_action_window">
@@ -115,12 +131,6 @@
             <field name="res_model">oca.flows</field>
             <field name="view_mode">list,form,kanban,pivot,graph</field>
         </record>
-
-        <!-- Top menu item -->
-        <menuitem name="OCA Flows" id="oca_flows.menu_root" web_icon="oca_flows,static/description/icon.png"/>
-
-        <!-- menu 1 -->
-        <menuitem name="Processes" id="oca_flows.menu_1" parent="oca_flows.menu_root" action="oca_flows_action_window"/>
 
     </data>
 </odoo>

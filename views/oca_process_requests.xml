@@ -20,32 +20,40 @@
                                 invisible="state != 'approved'"/>
                         <button name="action_completed" string="Complete" type="object" class="oe_highlight"
                                 invisible="state != 'in_progress'"/>
+                        <button name="action_create_quotation" string="Quote Customer" type="object"
+                                class="oe_highlight"
+                                invisible="state != 'approved'"/>
                         <field name="state" widget="statusbar"
                                statusbar_visible="draft,submitted,approved,in_progress,completed"
                                statusbar_colors='{"rejected": "red", "cancelled": "red"}'/>
                     </header>
                     <sheet>
-
                         <div class="oe_title">
                             <h1>
-                                <field name="name" placeholder="Process Number"/>
+                                <field name="name" placeholder="Process Number" readonly="1"/>
                             </h1>
                         </div>
                         <group>
                             <group>
-                                <field name="flow_id"/>
-                                <field name="customer_id" options="{'no_open': True}"/>
-                                <field name="start_date"/>
-                                <field name="end_date"/>
-                            </group>
-                            <group>
+                                <field name="flow_id" readonly="state != 'draft'"/>
+                                <field name="customer_id" options="{'no_open': True}"
+                                       domain="[('is_oca_customer','=',True)]" readonly="state != 'draft'"/>
                                 <field name="create_date" string="Created on" readonly="1"/>
                                 <field name="write_date" string="Last Updated on" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="start_date" readonly="state != 'draft'"/>
+                                <field name="end_date" readonly="state != 'draft'"/>
+                                <field name="duration" readonly="1"/>
+                                <field name="price" readonly="1"/>
                             </group>
                         </group>
                         <notebook>
                             <page string="Description">
                                 <field name="description" nolabel="1" placeholder="Enter process description..."/>
+                            </page>
+                            <page string="Quotes" readonly="1">
+                                <field name="sale_quotation_ids" widget="sol_o2m" options="{'create': False}"/>
                             </page>
                         </notebook>
                     </sheet>
@@ -59,13 +67,16 @@
             <field name="model">oca.process.requests</field>
             <field name="arch" type="xml">
                 <list string="OCA Processes" decoration-muted="state in ('rejected', 'cancelled')"
-                      decoration-success="state == 'completed'">
+                      decoration-success="state == 'completed'" decoration-warning="state == 'in_progress'"
+                      decoration-info="state == 'approved'">
                     <field name="name"/>
                     <field name="flow_id"/>
                     <field name="customer_id"/>
                     <field name="start_date"/>
                     <field name="end_date"/>
-                    <field name="state" widget="badge"/>
+                    <field name="state" widget="badge" decoration-muted="state in ('rejected', 'cancelled')"
+                           decoration-success="state == 'completed'" decoration-warning="state == 'in_progress'"
+                           decoration-info="state == 'approved'"/>
                 </list>
             </field>
         </record>
@@ -107,9 +118,6 @@
             </field>
         </record>
 
-        <!-- Menu Items -->
-        <menuitem id="menu_oca_process_request" parent="oca_flows.menu_root"
-                  name="Requests" action="action_oca_process_requests" sequence="20"/>
 
     </data>
 </odoo>

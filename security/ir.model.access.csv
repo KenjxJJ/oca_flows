@@ -1,3 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_oca_flows,oca_flows.oca_flows,model_oca_flows,base.group_user,1,1,1,1
 access_oca_process_requests,oca_flows.oca_process_requests,model_oca_process_requests,base.group_user,1,1,1,1
+access_oca_employees,oca_flows.oca_employees,model_oca_employees,base.group_user,1,1,1,1
+access_oca_employee_qualifications,oca_flows.oca_employee_qualifications,model_oca_employee_qualifications,base.group_user,1,1,1,1
