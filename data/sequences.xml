@@ -7,6 +7,7 @@
             <field name="prefix">CO-REQ-</field>
             <field name="padding">5</field>
             <field name="number_next">1</field>
+            <field name="implementation">no_gap</field>
         </record>
     </data>
 </odoo>

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api,_
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
 
@@ -18,7 +18,7 @@ class OCAFlows(models.Model):
 
     start_date = fields.Date(string='Start Date')
     end_date = fields.Date(string='End Date')
-    duration = fields.Integer(string='Duration')
+    duration = fields.Integer(string='Duration (Days)', compute='_compute_duration', store=True)
 
     is_active = fields.Boolean(string='Active', default=True)
     activity_checklist = fields.Html(string='Activity Checklist')
@@ -34,6 +34,14 @@ class OCAFlows(models.Model):
                 raise UserError('Start Date must be before End Date!')
 
     requests_count = fields.Integer(compute='_compute_requests_count')
+
+    @api.depends('start_date', 'end_date')
+    def _compute_duration(self):
+        for rec in self:
+            if rec.start_date and rec.end_date:
+                rec.duration = (rec.end_date - rec.start_date).days
+            else:
+                rec.duration = 0
 
     def _compute_requests_count(self):
         # aggregate counts by flow_id in one query
@@ -75,11 +83,12 @@ class OCAProcess(models.Model):
     description = fields.Html(string='Description')
     start_date = fields.Date(string='Start Date')
     end_date = fields.Date(string='End Date')
-    duration = fields.Integer(string='Duration')
+    duration = fields.Integer(string='Duration (Days)')
     price = fields.Float(string='Price')
 
     customer_id = fields.Many2one('res.partner', string='Customer')
     flow_id = fields.Many2one('oca.flows', string='Flow')
+    activity_checklist = fields.Html(related='flow_id.activity_checklist')
     sale_quotation_ids = fields.One2many('sale.order', 'process_id', string='Customer Quotes')
     sale_quotation_count = fields.Integer(compute='_compute_sale_quotation_count')
     state = fields.Selection([
@@ -91,14 +100,33 @@ class OCAProcess(models.Model):
         ('rejected', 'Rejected'),
         ('cancelled', 'Cancelled')
     ], string='Status', default='draft')
-
+    pricelist_id = fields.Many2one('product.pricelist', string='Pricelist')
+    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
+    currency_id = fields.Many2one(
+        comodel_name='res.currency',
+        string='Currency',
+        compute='_compute_currency_id', store=True, readonly=False, precompute=True,
+        help="The payment's currency.")
     approved_by = fields.Many2one('res.users', string='Approved By')
     approved_on = fields.Date(string='Approved Date')
+
+    @api.depends('pricelist_id', 'company_id')
+    def _compute_currency_id(self):
+        for req in self:
+            req.currency_id = req.pricelist_id.currency_id or req.company_id.currency_id
+
+    def _set_pricelist_id(self):
+        for rec in self:
+            rec.pricelist_id = self.env['product.pricelist'].search([
+                '|', ('company_id', '=', False),
+                ('company_id', '=', self.env.company.id)], limit=1)
 
     @api.onchange('flow_id')
     def _onchange_flow_id(self):
         for rec in self:
             if rec.flow_id:
+                self._set_pricelist_id()
+
                 rec.start_date = rec.flow_id.start_date
                 rec.end_date = rec.flow_id.end_date
                 rec.duration = rec.flow_id.duration
@@ -153,6 +181,10 @@ class OCAProcess(models.Model):
     def action_reject(self):
         for rec in self:
             rec.write({'state': 'rejected'})
+
+    def action_draft(self):
+        for rec in self:
+            rec.write({'state': 'draft'})
 
     def action_cancel(self):
         for rec in self:
@@ -225,7 +257,7 @@ class OCAProcess(models.Model):
         }
 
         so = self.env['sale.order'].with_company(company).create(quotation_vals)
-        self.sale_quotation_ids = [(4,so.id)]
+        self.sale_quotation_ids = [(4, so.id)]
         self.message_post(
             body=_(f"Quoatation {so.name} created and posted.")
         )
@@ -239,7 +271,6 @@ class OCAProcess(models.Model):
             'res_id': so.id,
             'target': 'current',
         }
-
 
     class SaleOrder(models.Model):
         _inherit = 'sale.order'

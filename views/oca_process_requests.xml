@@ -23,6 +23,9 @@
                         <button name="action_create_quotation" string="Quote Customer" type="object"
                                 class="oe_highlight"
                                 invisible="state != 'approved'"/>
+                        <button name="action_draft" string="Reset to Draft" type="object"
+                                invisible="state == 'draft'"/>
+
                         <field name="state" widget="statusbar"
                                statusbar_visible="draft,submitted,approved,in_progress,completed"
                                statusbar_colors='{"rejected": "red", "cancelled": "red"}'/>
@@ -37,23 +40,32 @@
                             <group>
                                 <field name="flow_id" readonly="state != 'draft'"/>
                                 <field name="customer_id" options="{'no_open': True}"
+                                       context="{'default_is_oca_customer': True}"
                                        domain="[('is_oca_customer','=',True)]" readonly="state != 'draft'"/>
+                                <field name="pricelist_id" readonly="state != 'draft'" force_save="1"/>
                                 <field name="create_date" string="Created on" readonly="1"/>
-                                <field name="write_date" string="Last Updated on" readonly="1"/>
                             </group>
                             <group>
-                                <field name="start_date" readonly="state != 'draft'"/>
-                                <field name="end_date" readonly="state != 'draft'"/>
-                                <field name="duration" readonly="1"/>
-                                <field name="price" readonly="1"/>
+                                <field name="start_date" readonly="state != 'draft'" force_save="1"/>
+                                <field name="end_date" readonly="state != 'draft'" force_save="1"/>
+                                <field name="duration" readonly="state != 'draft'" force_save="1"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="price" readonly="1" force_save="1" widget="monetary"
+                                       currency_field="currency_id"
+                                />
                             </group>
                         </group>
                         <notebook>
                             <page string="Description">
                                 <field name="description" nolabel="1" placeholder="Enter process description..."/>
                             </page>
+
                             <page string="Quotes" readonly="1">
                                 <field name="sale_quotation_ids" widget="sol_o2m" options="{'create': False}"/>
+                            </page>
+
+                            <page string="Checklist">
+                                <field name="activity_checklist"/>
                             </page>
                         </notebook>
                     </sheet>
