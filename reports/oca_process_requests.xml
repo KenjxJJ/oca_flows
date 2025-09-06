@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="report_process_requests_action" model="ir.actions.report">
+            <field name="name">Request Print</field>
+            <field name="model">oca.process.requests</field>
+            <field name="report_name">oca_flows.report_process_requests</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="print_report_name">'Request %s' % (object.name or 'N/A')</field>
+            <field name="binding_model_id" ref="model_oca_process_requests"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <template id="report_process_requests">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+
+                            <style>
+                                .app-head { width:100%; margin-bottom:16px; }
+                                .app-title { font-size:22px; font-weight:700; margin:0; }
+                                .app-sub { color:#666; font-size:12px; margin:2px 0 0; }
+                                .badge {
+                                display:inline-block; padding:3px 8px; border-radius:12px; font-size:11px;
+                                font-weight:600;
+                                border:1px solid #e0e0e0; background:#f6f6f6;
+                                }
+                                .badge.approved { color:#0a7b34; border-color:#bfe3cc; background:#e9f7ef; }
+                                .badge.submitted { color:#0d6efd; border-color:#cfe2ff; background:#edf5ff; }
+                                .badge.rejected { color:#842029; border-color:#f1aeb5; background:#fde2e4; }
+                                .badge.draft { color:#5c5c5c; }
+
+                                .kv { width:100%; border-collapse:separate; border-spacing:0 8px; }
+                                .kv td { vertical-align:top; padding:2px 8px 2px 0; }
+                                .kv .k { width:36%; color:#555; }
+                                .kv .v { width:64%; font-weight:600; color:#1f1f1f; }
+
+                                .two-col { width:100%; table-layout:fixed; }
+                                .two-col td { vertical-align:top; padding:0; }
+                                .box {
+                                border:1px solid #e5e5e5; border-radius:6px; padding:10px 12px; margin-top:10px;
+                                }
+                                .box h3 { font-size:14px; margin:0 0 6px; color:#333; }
+                                .muted { color:#666; }
+                                .sig { height:60px; border-bottom:1px solid #ccc; width:250px; }
+                            </style>
+
+                            <!-- Header -->
+                            <table class="app-head">
+                                <tr>
+                                    <td>
+                                        <h1 class="app-title">Request Application</h1>
+                                        <p class="app-sub">
+                                            <t t-esc="(o.flow_id.company_id or o.env.company).name"/>
+                                        </p>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        <div>
+                                            <span class="badge" t-attf-class="badge #{o.state}">
+                                                <t t-esc="o.state and o.state.capitalize() or '—'"/>
+                                            </span>
+                                        </div>
+                                        <div class="muted" style="margin-top:6px;">
+                                            Generated on:
+                                            <span t-field="o.write_date" t-options="{'format': 'short'}"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Top meta -->
+                            <table class="kv">
+                                <tr>
+                                    <td class="k">Request #</td>
+                                    <td class="v">
+                                        <t t-esc="o.name or ('#%s' % o.id)"/>
+                                    </td>
+                                </tr>
+                                <tr t-if="o.create_date">
+                                    <td class="k">Applied On</td>
+                                    <td class="v">
+                                        <span t-field="o.create_date" t-options="{'format': 'short'}"/>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Two columns -->
+                            <table class="two-col">
+                                <tr>
+                                    <td style="padding-right:12px;">
+                                        <div class="box">
+                                            <h3>Customer</h3>
+                                            <table class="kv">
+                                                <tr>
+                                                    <td class="k">Name</td>
+                                                    <td class="v">
+                                                        <t t-esc="o.customer_id.display_name"/>
+                                                    </td>
+                                                </tr>
+                                                <tr t-if="o.customer_id.email">
+                                                    <td class="k">Email</td>
+                                                    <td class="v">
+                                                        <t t-esc="o.customer_id.email"/>
+                                                    </td>
+                                                </tr>
+                                                <tr t-if="o.customer_id.phone or o.customer_id.mobile">
+                                                    <td class="k">Phone</td>
+                                                    <td class="v">
+                                                        <t t-esc="o.customer_id.mobile or o.customer_id.phone"/>
+                                                    </td>
+                                                </tr>
+                                                <tr t-if="o.customer_id.contact_address">
+                                                    <td class="k">Address</td>
+                                                    <td class="v">
+                                                        <t t-esc="o.customer_id.contact_address"/>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </td>
+                                    <td style="padding-left:12px;">
+                                        <div class="box">
+                                            <h3>Process</h3>
+                                            <table class="kv">
+                                                <tr>
+                                                    <td class="k">Process Item</td>
+                                                    <td class="v">
+                                                        <t t-esc="o.flow_id.name"/>
+                                                    </td>
+                                                </tr>
+                                                <tr t-if="o.flow_id.list_price">
+                                                    <td class="k">Sales Price</td>
+                                                    <td class="v">
+                                                        <span t-field="o.flow_id.list_price"
+                                                              t-options="{'widget': 'monetary', 'display_currency': o.flow_id.currency_id}"/>
+                                                    </td>
+                                                </tr>
+                                                <tr t-if="o.start_date">
+                                                    <td class="k">Start Date</td>
+                                                    <td class="v">
+                                                        <span t-field="o.start_date"/>
+                                                    </td>
+                                                </tr>
+                                                <tr t-if="o.end_date">
+                                                    <td class="k">End Date</td>
+                                                    <td class="v">
+                                                        <span t-field="o.end_date"/>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Approval -->
+                            <div class="box" t-if="o.approved_by">
+                                <h3>Approval</h3>
+                                <table class="kv">
+                                    <tr>
+                                        <td class="k">Approved By</td>
+                                        <td class="v">
+                                            <t t-esc="o.approved_by.name"/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="o.approved_on">
+                                        <td class="k">Approved On</td>
+                                        <td class="v">
+                                            <span t-field="o.approved_on" t-options="{'format': 'short'}"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <!-- Overview & Notes -->
+                            <div class="box">
+                                <h3>Overview</h3>
+                                <div t-raw="o.description or ''"/>
+                            </div>
+
+                            <!-- Signatures -->
+                            <table style="width:100%; margin-top:22px;">
+                                <tr>
+                                    <td style="width:50%; padding-right:12px;">
+                                        <div class="muted">Customer Signature</div>
+                                        <div class="sig"></div>
+                                        <div class="muted" style="margin-top:6px;">
+                                            Date: ____________________
+                                        </div>
+                                    </td>
+                                    <td style="width:50%; padding-left:12px;">
+                                        <div class="muted">Authorized Signature</div>
+                                        <div class="sig"></div>
+                                        <div class="muted" style="margin-top:6px;">
+                                            Date: ____________________
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

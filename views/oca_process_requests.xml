@@ -104,12 +104,41 @@
             </field>
         </record>
 
+        <!-- Pivot -->
+        <record id="view_oca_process_requests_pivot" model="ir.ui.view">
+            <field name="name">oca.process.requests.pivot</field>
+            <field name="model">oca.process.requests</field>
+            <field name="arch" type="xml">
+                <pivot>
+                    <!-- Rows -->
+                    <field name="flow_id" type="row" string="Process"/>
+                    <field name="customer_id" type="row" string="Customer"/>
+                    <field name="start_date" type="col" interval="month" string="Start Month"/>
+
+                    <!-- Measures -->
+                    <field name="price" type="measure" string="Total Sales"/>
+                </pivot>
+            </field>
+        </record>
+
+        <record id="view_oca_process_requests_graph" model="ir.ui.view">
+            <field name="name">oca.process.requests.graph</field>
+            <field name="model">oca.process.requests</field>
+            <field name="arch" type="xml">
+                <graph string="Requests (By Customer)" type="bar">
+                    <field name="flow_id" type="row"/>
+                    <field name="price" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+
         <!-- Action -->
         <record id="action_oca_process_requests" model="ir.actions.act_window">
             <field name="name">OCA Processes</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">oca.process.requests</field>
-            <field name="view_mode">list,form</field>
+            <field name="view_mode">list,form,pivot,graph</field>
             <field name="search_view_id" ref="view_oca_process_search"/>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">

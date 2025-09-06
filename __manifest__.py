@@ -18,6 +18,7 @@
         'views/oca_process_requests.xml',
         'views/oca_employees.xml',
         'views/menus.xml',
+        'reports/oca_process_requests.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

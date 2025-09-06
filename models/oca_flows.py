@@ -92,6 +92,9 @@ class OCAProcess(models.Model):
         ('cancelled', 'Cancelled')
     ], string='Status', default='draft')
 
+    approved_by = fields.Many2one('res.users', string='Approved By')
+    approved_on = fields.Date(string='Approved Date')
+
     @api.onchange('flow_id')
     def _onchange_flow_id(self):
         for rec in self:
@@ -141,7 +144,11 @@ class OCAProcess(models.Model):
 
     def action_approve(self):
         for rec in self:
-            rec.write({'state': 'approved'})
+            rec.write({
+                'state': 'approved',
+                'approved_by': self.env.user.id,
+                'approved_on': fields.Date.today(),
+            })
 
     def action_reject(self):
         for rec in self:
